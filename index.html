@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GATE CSE Preparation Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3d3d3d;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent: #4a9eff;
+            --accent-hover: #3a8aef;
+            --border: #404040;
+            --card-radius: clamp(6px, 1.5vw, 8px);
+            --sidebar-width: clamp(250px, 25vw, 300px);
+            --header-height: clamp(50px, 8vw, 60px);
+            --success: #4CAF50;
+            --mobile-nav-height: 60px;
+        }
+
+        /* Reduced motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            padding-bottom: var(--mobile-nav-height);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: clamp(15px, 3vw, 20px) 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 clamp(15px, 3vw, 20px) clamp(15px, 3vw, 20px);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: clamp(15px, 3vw, 20px);
+        }
+
+        .sidebar-header h1 {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .overall-progress {
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            height: clamp(4px, 1.5vw, 6px);
+            background-color: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            color: var(--text-secondary);
+        }
+
+        .subject-list {
+            padding: 0 10px;
+        }
+
+        .subject-item {
+            padding: clamp(10px, 2.5vw, 12px) 10px;
+            border-radius: var(--card-radius);
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .subject-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .subject-item.active {
+            background-color: var(--bg-tertiary);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subject-name {
+            font-weight: 500;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .subject-progress {
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: var(--text-secondary);
+        }
+
+        .subject-progress-bar {
+            height: 4px;
+            background-color: var(--bg-tertiary);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .subject-progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: clamp(15px, 3vw, 20px);
+            max-width: calc(100vw - var(--sidebar-width));
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(20px, 4vw, 30px);
+            padding-bottom: clamp(12px, 2.5vw, 15px);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: var(--card-radius);
+            padding: 8px 12px;
+            width: 100%;
+            max-width: 300px;
+            min-height: 44px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: var(--card-radius);
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2vw, 0.85rem);
+            transition: all 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .subject-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--card-radius);
+            margin-bottom: clamp(15px, 3vw, 20px);
+            overflow: hidden;
+        }
+
+        .subject-card-header {
+            padding: clamp(14px, 3vw, 16px) clamp(15px, 3vw, 20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            min-height: 44px;
+        }
+
+        .subject-card-header:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .subject-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .subject-card-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .topics-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .subject-card-header:not(.collapsed) + .topics-container {
+            max-height: 5000px;
+        }
+
+        .topic-card {
+            padding: clamp(14px, 3vw, 16px) clamp(15px, 3vw, 20px);
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s;
+        }
+
+        .topic-card:last-child {
+            border-bottom: none;
+        }
+
+        .topic-card:active {
+            background-color: var(--bg-tertiary);
+        }
+
+        .topic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: clamp(12px, 2.5vw, 15px);
+        }
+
+        .topic-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-number {
+            background-color: var(--bg-tertiary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: var(--text-secondary);
+        }
+
+        .topic-name {
+            font-weight: 500;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .topic-checkbox {
+            width: clamp(18px, 4.5vw, 22px);
+            height: clamp(18px, 4.5vw, 22px);
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            min-width: 44px;
+            min-height: 44px;
+            position: relative;
+        }
+
+        .topic-checkbox::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .topic-checkbox.checked {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .topic-checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: clamp(12px, 3vw, 14px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .topic-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(15px, 3vw, 20px);
+        }
+
+        .chart-container {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--card-radius);
+            padding: clamp(12px, 2.5vw, 15px);
+            height: 200px;
+            overflow-x: auto;
+        }
+
+        .chart-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .chart-container::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        .chart-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .years-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .year-tag {
+            background-color: var(--bg-tertiary);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: clamp(0.7rem, 2vw, 0.75rem);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+        }
+
+        .year-tag:hover {
+            background-color: var(--accent);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: var(--card-radius);
+            font-size: 0.8rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            height: var(--mobile-nav-height);
+            z-index: 200;
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            height: 100%;
+        }
+
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.7rem;
+            transition: color 0.2s;
+            min-height: 44px;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--accent);
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: var(--bg-secondary);
+            z-index: 300;
+            transition: right 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 250;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Swipe area indicator */
+        .swipe-indicator {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background-color: var(--text-secondary);
+            border-radius: 2px;
+            z-index: 150;
+            display: none;
+        }
+
+        /* Mobile search overlay */
+        .mobile-search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-primary);
+            z-index: 400;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+        }
+
+        .mobile-search-overlay.active {
+            display: flex;
+        }
+
+        .mobile-search-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-search-close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin-right: 15px;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-search-input {
+            background-color: var(--bg-secondary);
+            border: none;
+            border-radius: var(--card-radius);
+            padding: 12px 15px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 1024px) {
+            .topic-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: var(--mobile-nav-height);
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 80%;
+                max-width: 300px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding-bottom: 20px;
+            }
+            
+            .container {
+                flex-direction: column;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .search-bar {
+                max-width: 100%;
+            }
+            
+            .mobile-nav {
+                display: block;
+            }
+            
+            .swipe-indicator {
+                display: block;
+            }
+            
+            .subject-card-header, .topic-card, .topic-checkbox {
+                min-height: 44px;
+            }
+            
+            .topic-checkbox::before {
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filters {
+                flex-direction: column;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .chart-container {
+                height: 160px;
+            }
+        }
+
+        /* Pull to refresh */
+        .pull-to-refresh {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            z-index: 50;
+            transition: top 0.3s ease;
+        }
+
+        .pull-to-refresh.active {
+            top: 0;
+        }
+
+        .pull-to-refresh i {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Pull to refresh indicator -->
+    <div class="pull-to-refresh" id="pull-to-refresh">
+        <i class="fas fa-sync-alt"></i>
+    </div>
+
+    <!-- Swipe indicator -->
+    <div class="swipe-indicator" id="swipe-indicator"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>GATE CSE Tracker</h1>
+                <div class="overall-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overall-progress-bar"></div>
+                    </div>
+                    <div class="progress-text" id="overall-progress-text">0% Complete</div>
+                </div>
+            </div>
+            <div class="subject-list" id="subject-list">
+                <!-- Subjects will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="search-bar" id="search-bar">
+                    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                    <input type="text" id="search-input" placeholder="Search topics...">
+                </div>
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">All Topics</button>
+                    <button class="filter-btn" data-filter="high-repetition">High Repetition</button>
+                    <button class="filter-btn" data-filter="recent">Recent Years</button>
+                    <button class="filter-btn" data-filter="incomplete">Not Completed</button>
+                </div>
+                <div class="sort-options">
+                    <select id="sort-select" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 8px 12px; min-height: 44px; font-size: clamp(0.8rem, 2vw, 0.85rem);">
+                        <option value="most-repeated">Most Repeated</option>
+                        <option value="alphabetical">Alphabetical</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="subjects-container">
+                <!-- Subjects and topics will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="#" class="mobile-nav-item active" id="nav-home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="mobile-nav-item" id="nav-subjects">
+                <i class="fas fa-book"></i>
+                <span>Subjects</span>
+            </a>
+            <a href="#" class="mobile-nav-item" id="nav-progress">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="#" class="mobile-nav-item" id="nav-menu">
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <h2>Menu</h2>
+            <button class="mobile-menu-close" id="mobile-menu-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Topics</button>
+            <button class="filter-btn" data-filter="high-repetition">High Repetition</button>
+            <button class="filter-btn" data-filter="recent">Recent Years</button>
+            <button class="filter-btn" data-filter="incomplete">Not Completed</button>
+        </div>
+        <div class="sort-options" style="margin-top: 20px;">
+            <select id="mobile-sort-select" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--card-radius); padding: 8px 12px; width: 100%; min-height: 44px;">
+                <option value="most-repeated">Most Repeated</option>
+                <option value="alphabetical">Alphabetical</option>
+                <option value="oldest">Oldest First</option>
+                <option value="newest">Newest First</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Mobile Search Overlay -->
+    <div class="mobile-search-overlay" id="mobile-search-overlay">
+        <div class="mobile-search-header">
+            <button class="mobile-search-close" id="mobile-search-close">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <input type="text" class="mobile-search-input" id="mobile-search-input" placeholder="Search topics..." autofocus>
+        </div>
+        <div id="mobile-search-results">
+            <!-- Search results will be displayed here -->
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // JSON Data - Full dataset with all subjects and topics
+        const gateData = {
+            "gate_progress": {
+                "created_on": "",
+                "last_updated": "",
+                "subjects": [
+                    {
+                        "name": "Discrete Mathematics",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Combinatory",
+                                "section": "1.2",
+                                "years": ["1989","1990","1991","1999","2000","2001","2003","2004","2007","2014 Set 1","2015 Set 3","2019","IT 2005","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Counting",
+                                "section": "2.1",
+                                "years": ["2001","2004","2012"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Recurrence Relation",
+                                "section": "1.7",
+                                "years": ["1996","2016 Set 1","2022","2023","IT 2004","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Degree of Graph",
+                                "section": "2.2",
+                                "years": ["1987","1991","1995","2003","2006","2009","2010","2013","2014 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Graph Coloring",
+                                "section": "2.3",
+                                "years": ["2002","2004","2009","2024 Set 1","2024 Set 2","IT 2006","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Graph Connectivity",
+                                "section": "2.4",
+                                "years": ["1987","1988","1990","1991","1993","1994","1995","1999","2002","2003","2004","2006","2007","2008","2013","2014 Set 1","2014 Set 2","2022","2024 Set 2","IT 2004","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Graph Planarity",
+                                "section": "2.7",
+                                "years": ["1990","1992","2005","2008","2012","2014 Set 3","2015 Set 1","2021 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "First Order Logic",
+                                "section": "3.1",
+                                "years": ["1989","2003","2004","2008","2009","2011","2012","IT 2006","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Propositional Logic",
+                                "section": "3.3",
+                                "years": ["1992","1993","1994","1995","1996","1999","2000","2004","2005","2006","2009","2014 Set 1","2014 Set 2","2016 Set 2","2017 Set 1","2017 Set 2","2024 Set 2","DS&AI 2024","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Binary Operation",
+                                "section": "4.1",
+                                "years": ["1989","1994","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Countable Uncountable Set",
+                                "section": "4.2",
+                                "years": ["1994","2018"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Functions",
+                                "section": "4.3",
+                                "years": ["1987","1988","1989","1993","1996","1997","1998","2001","2003","2005","2006","2007","2012","2014 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Group Theory",
+                                "section": "4.4",
+                                "years": ["1990","1992","1993","1995","1996","1999","2000","2002","2003","2004","2005","2006","2007","2009","2021 Set 1","2022","2023"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Lattice",
+                                "section": "4.5",
+                                "years": ["1994","1997","2002","2005","2015 Set 1","2017 Set 2","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Mathematical Induction",
+                                "section": "4.6",
+                                "years": ["1995","2000"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Number Theory",
+                                "section": "4.7",
+                                "years": ["1995","2014 Set 2","2015 Set 2","IT 2005","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Partial Order",
+                                "section": "4.8",
+                                "years": ["1991","1992","1993","1996","1997","1998","2003","2004","2007","2024 Set 2","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Polynomials",
+                                "section": "4.9",
+                                "years": ["1997","2000","2014 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Relations",
+                                "section": "4.10",
+                                "years": ["1987","1989","1992","1994","1995","1996","1997","1998","1999","2000","2001","2002","2004","2005","2009","2010","2015 Set 2","2015 Set 3","2016 Set 2","2020","2021 Set 1","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Set Theory",
+                                "section": "4.11",
+                                "years": ["1993","1994","1995","1996","1998","2000","2001","2005","2008","2014 Set 2","2021 Set 2","IT 2004","IT 2005","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Engineering Mathematics",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Matrix",
+                                "section": "6.4",
+                                "years": ["1994","1996","1997","1998","2001","2004","IT 2004","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Rank of Matrix",
+                                "section": "6.5",
+                                "years": ["1994","1995","1998","2002","2020","2021 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "System of Equations",
+                                "section": "6.6",
+                                "years": ["1998","2003","2004","2005","2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Expectation",
+                                "section": "7.4",
+                                "years": ["2011","2013","2014 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Random Variable",
+                                "section": "7.11",
+                                "years": ["2011","2012"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "General Aptitude",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Age Relation",
+                                "section": "8.1",
+                                "years": ["2010","2013"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Logical Reasoning",
+                                "section": "8.7",
+                                "years": ["2016 EC-1","2016 EC-3","2017 CE-1","2017 CE-2","2017 EC-2","2017 ME-1","2019 IN","ECE 2023","ECE 2024","ME 2021 Set 2","ME 2022 Set 1","ME 2022 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Number Relations",
+                                "section": "8.8",
+                                "years": ["2015 EC-1","CSE 2024 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Passage Reading",
+                                "section": "8.10",
+                                "years": ["EE 2020","ECE 2022"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Seating Arrangement",
+                                "section": "8.12",
+                                "years": ["EE 2021","2019 EC"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Sequence Series (Analytical)",
+                                "section": "8.13",
+                                "years": ["2015 EC-3","2018 ME-2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Statements Follow",
+                                "section": "8.14",
+                                "years": ["2013 AE","2014 AG","2017 CE-1","2017 EC-1","CH 2022","ECE 2022"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Arithmetic Series",
+                                "section": "9.6",
+                                "years": ["2015 Set 2","2020 Chemical","2020 Civil Set 1","2024 Civil Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Bar Graph",
+                                "section": "9.8",
+                                "years": ["2014 EC-1","2015 Set 3","2017 CE-1","2019 EC","2020 CSE","2021 Set 2","2024 ME"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Calendar",
+                                "section": "9.9",
+                                "years": ["2020 Civil Set 2","2022 Mechanical Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Combinatory",
+                                "section": "9.13",
+                                "years": ["2010 CSE","2011 MN","2012 AR","2015 ME-3","2016 Set 2","2017 Set 1","2017 EC-2","2019 EC"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Geometry",
+                                "section": "9.27",
+                                "years": ["2018 CH"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Line Graph",
+                                "section": "9.31",
+                                "years": ["2014 Set 2","2014 AE","2016 CE-2","2017 ME-2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Number System",
+                                "section": "9.37",
+                                "years": ["2010 MN","2016 CE-2","2018 ME-1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Percentage",
+                                "section": "9.40",
+                                "years": ["2017 EC-1","2018 EE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Permutation and Combination",
+                                "section": "9.41",
+                                "years": ["DS&AI 2024","2024 Civil Set 1","2024 CSE Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Pie Chart",
+                                "section": "9.42",
+                                "years": ["2014 AG","2014 EC-4","2015 Set 1","2017 EC-1","2019 ME-1","2023 ME","2024 CSE Set 1","2024 CSE Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Probability",
+                                "section": "9.44",
+                                "years": ["2015 Set 1","2022 EE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Ratio Proportion",
+                                "section": "9.49",
+                                "years": ["2011 AG","2011 GG","2013 AE","2014 AE","2022 Civil Set 2","2024 Civil Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Sequence Series (Quantitative)",
+                                "section": "9.52",
+                                "years": ["2019 EE","2019 ME-2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Statistics",
+                                "section": "9.56",
+                                "years": ["2012 CSE","2016 ME-2","2017 CE-1","2024 CSE Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Tabular Data",
+                                "section": "9.58",
+                                "years": ["2011 MN","2013 AE","2013 CE","2015 CE-2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Venn Diagram",
+                                "section": "9.62",
+                                "years": ["2010 TF","2011 GG","2015 CE-2","2016 EC-2","2017 EC-2","2018 ME-2","2019 CE-1","2019 CSE","2020 Civil Set 2","2021 Civil Set 1","2022 Civil Set 2","2023 ECE","2024 CSE Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Image Rotation",
+                                "section": "10.4",
+                                "years": ["2022 ECE","2024 EE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Mirror Image",
+                                "section": "10.5",
+                                "years": ["2021 Civil Set 1","2021 Civil Set 2","2022 Civil Set 2","2023 CH","2023 Civil Set 1","2024 CSE Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Patterns In Three Dimensions",
+                                "section": "10.7",
+                                "years": ["2023 CH","2023 IN","2023 ME","2024 DS&AI"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "English Grammar",
+                                "section": "11.3",
+                                "years": ["2015 CSE Set 2","2020 CSE","2021 CSE Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Grammatical Error",
+                                "section": "11.4",
+                                "years": ["2021 Mechanical Set 1","2021 Mechanical Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Most Appropriate Word",
+                                "section": "11.6",
+                                "years": ["2018 CSE","2019 CSE","2019 EC","2019 EE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Passage Reading (Verbal)",
+                                "section": "11.9",
+                                "years": ["2010 CSE","2011 CSE","2014 CSE Set 3","2016 CE-2","2016 EC-2","2019 CE-2","2019 EC","2019 EE","2019 IN","2019 ME-2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Prepositions",
+                                "section": "11.12",
+                                "years": ["2019 CE-2","2020 ME Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Sentence Ordering",
+                                "section": "11.16",
+                                "years": ["2015 EC-3","2023 ME"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Synonyms",
+                                "section": "11.17",
+                                "years": ["2012 CY","2013 CE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Tenses",
+                                "section": "11.18",
+                                "years": ["2012 CY","2013 AE","2014 EC-1","2017 ME-2","2020 EE","2023 EE"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Verbal Reasoning",
+                                "section": "11.19",
+                                "years": ["2014 EC-3","2015 EC-2","2019 ME-1","2020 ECE","2021 ME Set 2","2023 ME"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Word Meaning",
+                                "section": "11.20",
+                                "years": ["2014 CSE Set 2","2015 CSE Set 2","2016 CSE Set 1","2016 CSE Set 2","2017 EC-1","2017 EC-2","2017 ME-1","2017 ME-2","2019 CE-1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Algorithms",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Asymptotic Notation",
+                                "section": "1.3",
+                                "years": ["1996","1999","2000"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Dynamic Programming",
+                                "section": "1.7",
+                                "years": ["2008","2009","2010","2011","2014 Set 2","2014 Set 3"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Graph Search",
+                                "section": "1.9",
+                                "years": ["IT 2005","IT 2006","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Greedy Algorithm",
+                                "section": "1.10",
+                                "years": ["1999","2003"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Minimum Spanning Tree",
+                                "section": "1.18",
+                                "years": ["1992","1995","1996","2016 Set 1","2018","2020"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Recurrence Relation",
+                                "section": "1.21",
+                                "years": ["1987","1988","1989","1990","1992","1993","1994","1996","1997","1998","2002","2003","2004","2006","2008","2009","2012","2014 Set 2","2015 Set 1","2015 Set 3","2017 Set 2","2020","2021 Set 1","2024 Set 1","IT 2004","IT 2005","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Recursion",
+                                "section": "1.22",
+                                "years": ["1995","2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Sorting",
+                                "section": "1.25",
+                                "years": ["2003","2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Time Complexity",
+                                "section": "1.28",
+                                "years": ["1992","1999","2007","2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Topological Sort",
+                                "section": "1.29",
+                                "years": ["2014 Set 1","2016 Set 1","2024 DS&AI"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Computer Organization and Architecture",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Cache Memory",
+                                "section": "2.3",
+                                "years": ["2002","2004","2005","2012","2013","IT 2004","IT 2005","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Microprogramming",
+                                "section": "2.13",
+                                "years": ["IT 2005","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Pipelining",
+                                "section": "2.14",
+                                "years": ["2001","2002"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Virtual Memory",
+                                "section": "7.21",
+                                "years": ["1991","1994","1995","1996","1998","1999","2001","2002","2004","2005","2006","2008","2009","2013","2014 Set 3","2019","2020","IT 2004","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Compiler Design",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Assembler",
+                                "section": "3.1",
+                                "years": ["1992"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Compilation Phases",
+                                "section": "3.2",
+                                "years": ["2018","2020"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "First and Follow",
+                                "section": "3.5",
+                                "years": ["1992","2012","2019","2024 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Grammar",
+                                "section": "3.6",
+                                "years": ["1988","1991","1995","1996","1998","1999","2003","2006","2019","2021 Set 1","2024 Set 2","IT 2005","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "LR Parser",
+                                "section": "3.8",
+                                "years": ["2005","2006","2013"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Parsing",
+                                "section": "3.15",
+                                "years": ["1995","1998"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Runtime Environment",
+                                "section": "3.17",
+                                "years": ["1988","1989","2002","2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Syntax Directed Translation",
+                                "section": "3.19",
+                                "years": ["2001","2003"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Computer Networks",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Application Layer Protocols",
+                                "section": "4.1",
+                                "years": ["IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "CRC Polynomial",
+                                "section": "4.3",
+                                "years": ["2021 Set 2","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Communication",
+                                "section": "4.4",
+                                "years": ["IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Distance Vector Routing",
+                                "section": "4.5",
+                                "years": ["2011","2021 Set 2","2022"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "IP Addressing",
+                                "section": "4.8",
+                                "years": ["2003","2004","2014 Set 3","2017 Set 2","2018"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "LAN Technologies",
+                                "section": "4.10",
+                                "years": ["2014 Set 2","2019","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "MAC Protocol",
+                                "section": "4.11",
+                                "years": ["2021 Set 2","IT 2004","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Routing",
+                                "section": "4.19",
+                                "years": ["2024 Set 1","IT 2005","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Subnetting",
+                                "section": "4.23",
+                                "years": ["2003","2004","2005","2015 Set 3","2019","2020","2022","2023","IT 2004","IT 2006","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "TCP",
+                                "section": "4.24",
+                                "years": ["2022","2023"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Databases",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "B Tree",
+                                "section": "5.1",
+                                "years": ["2000","2001","2002","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Candidate Key",
+                                "section": "5.2",
+                                "years": ["1994","2011","2014 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Conflict Serializable",
+                                "section": "5.3",
+                                "years": ["2014 Set 1","2014 Set 2","2021 Set 2","2022","2024 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Database Normalization",
+                                "section": "5.5",
+                                "years": ["1988","1990","1994","1995","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2012","2013","2014 Set 1","2015 Set 2","2016 Set 1","2017 Set 1","2018","2019","2021 Set 1","2021 Set 2","2022","2024 Set 1","2024 Set 2","2024 DS&AI","2024 GATEDA Sample","IT 2004","IT 2005","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "ER Diagram",
+                                "section": "5.6",
+                                "years": ["2005","2008","2012","2014 Set 1","2015 Set 1","2017 Set 2","2024 Set 1","2024 Set 2","IT 2004","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Indexing",
+                                "section": "5.7",
+                                "years": ["1989","1990","1993","2023","2024 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Joins",
+                                "section": "5.8",
+                                "years": ["2004","2012","2014 Set 2","IT 2005","IT 2006","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Relational Algebra",
+                                "section": "5.13",
+                                "years": ["1992","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2007","2008","2014 Set 3","2015 Set 1","2017 Set 1","2018","2019","2021 Set 1","2022","2024 Set 1","2024 Set 2","2024 DS&AI","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Relational Calculus",
+                                "section": "5.14",
+                                "years": ["1993","2007","2008","2009","2013","2017 Set 1","IT 2006","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "SQL",
+                                "section": "5.16",
+                                "years": ["1988","1990","1991","1993","1998","1999","2000","2001","2003","2004","2005","2006","2007","2009","2010","2011","2012","2014 Set 1","2014 Set 2","2015 Set 1","2015 Set 3","2016 Set 2","2018","2019","2020","2021 Set 2","2022","2023","2024 DS&AI","IT 2004","IT 2005","IT 2006","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Transaction and Concurrency",
+                                "section": "5.17",
+                                "years": ["2003","2007","2009","2010","2012","2015 Set 2","2016 Set 1","2016 Set 2","2019","2020","2021 Set 1","2024 Set 2","IT 2004","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Digital Logic",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Boolean Algebra",
+                                "section": "6.3",
+                                "years": ["1987","1988","1989","1997","1998","2007","2008","2012","2013","2014 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Circuit Output",
+                                "section": "6.7",
+                                "years": ["2010","2011"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Finite State Machines",
+                                "section": "6.12",
+                                "years": ["1994","1996","2009"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Fixed Point Representation",
+                                "section": "6.13",
+                                "years": ["2017 Set 1","2018"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Flip Flop",
+                                "section": "6.14",
+                                "years": ["2001","2004","2015 Set 1","2017 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "K Map",
+                                "section": "6.18",
+                                "years": ["2002","2003"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Min Sum of Products Form",
+                                "section": "6.22",
+                                "years": ["1991","1997","2001","2005","2007","2011","2014 Set 1","2014 Set 3","2018","2021 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Multiplexer",
+                                "section": "6.23",
+                                "years": ["1992","2007","2016 Set 1","2020","2023","2024 Set 1","IT 2005","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Number Representation",
+                                "section": "6.24",
+                                "years": ["1988","1992","1993","1994","1995","1996","2002","2003","2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "ROM",
+                                "section": "6.26",
+                                "years": ["1993","1996","2012","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Shift Registers",
+                                "section": "6.27",
+                                "years": ["1987","1991"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Operating System",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Disk Scheduling",
+                                "section": "7.3",
+                                "years": ["1990","1995","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Memory Management",
+                                "section": "7.11",
+                                "years": ["2022","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Page Replacement",
+                                "section": "7.12",
+                                "years": ["1993","1994","1995","1997","2014 Set 1","2014 Set 2","2014 Set 3","2015 Set 1","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Precedence Graph",
+                                "section": "7.13",
+                                "years": ["1989","1991","1992"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Process Scheduling",
+                                "section": "7.15",
+                                "years": ["2006","2007","2012","2013","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Process Synchronization",
+                                "section": "7.16",
+                                "years": ["1994","1995","1996","1997","2013","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Resource Allocation",
+                                "section": "7.17",
+                                "years": ["1988","1989","1992","1993","1994","2006","2007","2014 Set 1","2014 Set 3"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Programming and Data Structures",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Array",
+                                "section": "8.2",
+                                "years": ["1993","1994","1997","1998","2000","2005","2021 Set 1"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Binary Heap",
+                                "section": "8.3",
+                                "years": ["1990","1996","1999","2001","2003","2004","2005","2006","2009","2011","2014 Set 2","2015 Set 1","2016 Set 2","2018","2019"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Binary Search Tree",
+                                "section": "8.4",
+                                "years": ["2003","2006","2010","2014 Set 3","2015 Set 1","2017 Set 1","IT 2005","IT 2006","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Binary Tree",
+                                "section": "8.5",
+                                "years": ["1991","1994","1995","1997","1998","2000","2002","2004","2006","2007","2024 DS&AI","IT 2004","IT 2005","IT 2006","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Data Structures (general)",
+                                "section": "8.6",
+                                "years": ["1997","2005","2024 DS&AI"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Hashing",
+                                "section": "8.7",
+                                "years": ["1996","1997","2009","2010","2014 Set 1","2014 Set 3","IT 2006","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Infix Prefix",
+                                "section": "8.8",
+                                "years": ["1998","2004","2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Linked List",
+                                "section": "8.9",
+                                "years": ["1987","1993","1994","1995","1997","1998","1999","2003","2004","2008","2010","2016 Set 2","2017 Set 1","2020","2022","IT 2004","IT 2005"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Priority Queue",
+                                "section": "8.10",
+                                "years": ["1997","2023"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Queue",
+                                "section": "8.11",
+                                "years": ["1992","1994","1996","2012","2013"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Stack",
+                                "section": "8.12",
+                                "years": ["1991","1994","1995","2000","2003","2004","2014 Set 2","2023","2024 Set 2","IT 2004"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Tree",
+                                "section": "8.13",
+                                "years": ["1990","1992","1994","1998","2002"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Programming (C and Paradigms)",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Array (C)",
+                                "section": "9.2",
+                                "years": ["2011","2022","IT 2004","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Programming In C",
+                                "section": "9.11",
+                                "years": ["2000","2002"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Recursion (C)",
+                                "section": "9.13",
+                                "years": ["1991","1994","2000","2001"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Theory of Computation",
+                        "start_date": "",
+                        "completion_date": "",
+                        "topics": [
+                            {
+                                "name": "Closure Property",
+                                "section": "10.1",
+                                "years": ["2016 Set 2","2017 Set 2","2018","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Context Free Language",
+                                "section": "10.2",
+                                "years": ["1992","1995","1996","2006","2009","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Countable Uncountable Set",
+                                "section": "10.3",
+                                "years": ["1997","2014 Set 3","2019"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Decidability",
+                                "section": "10.4",
+                                "years": ["2002","2003","2020","2021 Set 2","2022"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Finite Automata",
+                                "section": "10.5",
+                                "years": ["1988","1991","1993","1996","1997","1998","2001","2004","2005","2007","2008","2021 Set 2","2024 Set 1","IT 2005","IT 2006","IT 2007"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Identify Class Language",
+                                "section": "10.6",
+                                "years": ["1987","1988","1991","1994","1999","2000","2002","2006","2007","2009","2011","2013","2014 Set 3","2017 Set 1","2018","2020","2021 Set 2","2022","2023","IT 2005","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Minimal State Automata",
+                                "section": "10.7",
+                                "years": ["1987","1997","2001","2002","2006","2007","2010","2011","2015 Set 1","2015 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Pushdown Automata",
+                                "section": "10.10",
+                                "years": ["1996","1997","1998","1999","2000","2001","2009","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Recursive and Recursively Enumerable Languages",
+                                "section": "10.11",
+                                "years": ["1990","2003","2005","2008","2010","2014 Set 2","2015 Set 1","2016 Set 1","2016 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Regular Expression",
+                                "section": "10.13",
+                                "years": ["1987","1991","1994","1995","1996","1997","1998","2000","2003","2009","2024 Set 2","IT 2004","IT 2005","IT 2007","IT 2008"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Regular Grammar",
+                                "section": "10.14",
+                                "years": ["1990","2015 Set 2"],
+                                "start_date": "",
+                                "completion_date": ""
+                            },
+                            {
+                                "name": "Regular Language",
+                                "section": "10.15",
+                                "years": ["1987","1990","1991","1995","1996","1998","1999","2001","2006","2007","2008","2011","2020","2021 Set 2","2024 Set 1","IT 2006"],
+                                "start_date": "",
+                                "completion_date": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // App State
+        let appState = {
+            activeSubject: null,
+            completedTopics: JSON.parse(localStorage.getItem('completedTopics')) || {},
+            currentFilter: 'all',
+            currentSort: 'most-repeated',
+            searchQuery: '',
+            isMobile: window.innerWidth <= 768,
+            touchStartY: 0,
+            touchStartX: 0,
+            isSwiping: false
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSidebar();
+            renderMainContent();
+            setupEventListeners();
+            updateOverallProgress();
+            setupTouchEvents();
+        });
+
+        // Setup touch events
+        function setupTouchEvents() {
+            // Long press to mark topic as done
+            let longPressTimer;
+            let longPressTarget;
+            
+            document.addEventListener('touchstart', function(e) {
+                const topicCheckbox = e.target.closest('.topic-checkbox');
+                if (topicCheckbox) {
+                    longPressTarget = topicCheckbox;
+                    longPressTimer = setTimeout(() => {
+                        toggleTopicCompletion(longPressTarget);
+                        longPressTarget = null;
+                    }, 500);
+                }
+                
+                // For pull to refresh
+                appState.touchStartY = e.touches[0].clientY;
+                appState.touchStartX = e.touches[0].clientX;
+                appState.isSwiping = false;
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                // Cancel long press if user moves finger
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+                
+                // Check if user is swiping horizontally
+                const touchX = e.touches[0].clientX;
+                const touchY = e.touches[0].clientY;
+                
+                if (!appState.isSwiping && Math.abs(touchX - appState.touchStartX) > Math.abs(touchY - appState.touchStartY)) {
+                    appState.isSwiping = true;
+                }
+                
+                // Pull to refresh
+                if (!appState.isSwiping && touchY > appState.touchStartY && window.scrollY === 0) {
+                    const pullDistance = touchY - appState.touchStartY;
+                    if (pullDistance > 50) {
+                        document.getElementById('pull-to-refresh').classList.add('active');
+                    }
+                }
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+                
+                // Pull to refresh
+                const pullToRefresh = document.getElementById('pull-to-refresh');
+                if (pullToRefresh.classList.contains('active')) {
+                    pullToRefresh.classList.remove('active');
+                    // Refresh data
+                    updateOverallProgress();
+                    renderSidebar();
+                    renderMainContent();
+                }
+            });
+            
+            // Swipe to open sidebar on mobile
+            let touchStartX = 0;
+            document.addEventListener('touchstart', function(e) {
+                if (appState.isMobile) {
+                    touchStartX = e.touches[0].clientX;
+                }
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                if (appState.isMobile) {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const swipeDistance = touchEndX - touchStartX;
+                    
+                    // Swipe from left edge to open sidebar
+                    if (touchStartX < 50 && swipeDistance > 100) {
+                        document.getElementById('sidebar').classList.add('active');
+                        document.getElementById('overlay').classList.add('active');
+                    }
+                    
+                    // Swipe from right to close sidebar
+                    if (touchStartX > window.innerWidth - 50 && swipeDistance < -100) {
+                        document.getElementById('sidebar').classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Toggle topic completion
+        function toggleTopicCompletion(checkbox) {
+            const subject = checkbox.getAttribute('data-subject');
+            const topic = checkbox.getAttribute('data-topic');
+            const key = `${subject}-${topic}`;
+            
+            if (appState.completedTopics[key]) {
+                delete appState.completedTopics[key];
+                checkbox.classList.remove('checked');
+            } else {
+                appState.completedTopics[key] = true;
+                checkbox.classList.add('checked');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('completedTopics', JSON.stringify(appState.completedTopics));
+            
+            // Update progress
+            updateOverallProgress();
+            renderSidebar();
+        }
+
+        // Render Sidebar
+        function renderSidebar() {
+            const subjectList = document.getElementById('subject-list');
+            subjectList.innerHTML = '';
+
+            gateData.gate_progress.subjects.forEach(subject => {
+                const completedCount = subject.topics.filter(topic => 
+                    appState.completedTopics[`${subject.name}-${topic.name}`]
+                ).length;
+                const progressPercentage = subject.topics.length > 0 ? 
+                    Math.round((completedCount / subject.topics.length) * 100) : 0;
+
+                const subjectItem = document.createElement('div');
+                subjectItem.className = `subject-item ${appState.activeSubject === subject.name ? 'active' : ''}`;
+                subjectItem.innerHTML = `
+                    <div class="subject-header">
+                        <div class="subject-name">${subject.name}</div>
+                        <div class="subject-progress">${progressPercentage}%</div>
+                    </div>
+                    <div class="subject-progress-bar">
+                        <div class="subject-progress-fill" style="width: ${progressPercentage}%"></div>
+                    </div>
+                `;
+
+                subjectItem.addEventListener('click', () => {
+                    appState.activeSubject = subject.name;
+                    renderSidebar();
+                    renderMainContent();
+                    
+                    // Close sidebar on mobile after selection
+                    if (appState.isMobile) {
+                        document.getElementById('sidebar').classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                    }
+                });
+
+                subjectList.appendChild(subjectItem);
+            });
+        }
+
+        // Render Main Content
+        function renderMainContent() {
+            const subjectsContainer = document.getElementById('subjects-container');
+            subjectsContainer.innerHTML = '';
+
+            let subjectsToRender = gateData.gate_progress.subjects;
+            
+            // Filter by active subject if one is selected
+            if (appState.activeSubject) {
+                subjectsToRender = subjectsToRender.filter(subject => subject.name === appState.activeSubject);
+            }
+
+            subjectsToRender.forEach(subject => {
+                let topicsToRender = [...subject.topics];
+                
+                // Apply search filter
+                if (appState.searchQuery) {
+                    topicsToRender = topicsToRender.filter(topic => 
+                        topic.name.toLowerCase().includes(appState.searchQuery.toLowerCase())
+                    );
+                }
+                
+                // Apply topic filters
+                switch (appState.currentFilter) {
+                    case 'high-repetition':
+                        topicsToRender = topicsToRender.filter(topic => topic.years.length >= 5);
+                        break;
+                    case 'recent':
+                        topicsToRender = topicsToRender.filter(topic => {
+                            const recentYears = topic.years.filter(year => {
+                                const yearNum = parseInt(year);
+                                return !isNaN(yearNum) && yearNum >= 2020;
+                            });
+                            return recentYears.length > 0;
+                        });
+                        break;
+                    case 'incomplete':
+                        topicsToRender = topicsToRender.filter(topic => 
+                            !appState.completedTopics[`${subject.name}-${topic.name}`]
+                        );
+                        break;
+                }
+                
+                // Apply sorting
+                switch (appState.currentSort) {
+                    case 'most-repeated':
+                        topicsToRender.sort((a, b) => b.years.length - a.years.length);
+                        break;
+                    case 'alphabetical':
+                        topicsToRender.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                    case 'oldest':
+                        topicsToRender.sort((a, b) => {
+                            const aMinYear = Math.min(...a.years.map(y => parseInt(y)).filter(y => !isNaN(y)));
+                            const bMinYear = Math.min(...b.years.map(y => parseInt(y)).filter(y => !isNaN(y)));
+                            return aMinYear - bMinYear;
+                        });
+                        break;
+                    case 'newest':
+                        topicsToRender.sort((a, b) => {
+                            const aMaxYear = Math.max(...a.years.map(y => parseInt(y)).filter(y => !isNaN(y)));
+                            const bMaxYear = Math.max(...b.years.map(y => parseInt(y)).filter(y => !isNaN(y)));
+                            return bMaxYear - aMaxYear;
+                        });
+                        break;
+                }
+
+                const subjectCard = document.createElement('div');
+                subjectCard.className = 'subject-card';
+                
+                const subjectCardHeader = document.createElement('div');
+                subjectCardHeader.className = 'subject-card-header collapsed'; // Set to collapsed by default
+                subjectCardHeader.innerHTML = `
+                    <div class="subject-card-title">
+                        <span class="toggle-icon">▼</span>
+                        <h2>${subject.name}</h2>
+                    </div>
+                    <div>${topicsToRender.length} topics</div>
+                `;
+
+                const topicsContainer = document.createElement('div');
+                topicsContainer.className = 'topics-container';
+
+                topicsToRender.forEach(topic => {
+                    const topicCard = document.createElement('div');
+                    topicCard.className = 'topic-card';
+                    
+                    const isCompleted = appState.completedTopics[`${subject.name}-${topic.name}`];
+                    
+                    topicCard.innerHTML = `
+                        <div class="topic-header">
+                            <div class="topic-info">
+                                <div class="section-number">${topic.section}</div>
+                                <div class="topic-name">${topic.name}</div>
+                            </div>
+                            <div class="topic-checkbox ${isCompleted ? 'checked' : ''}" 
+                                 data-subject="${subject.name}" 
+                                 data-topic="${topic.name}"></div>
+                        </div>
+                        <div class="topic-content">
+                            <div class="chart-container">
+                                <canvas class="topic-chart" data-years='${JSON.stringify(topic.years)}'></canvas>
+                            </div>
+                            <div>
+                                <div>Appeared in:</div>
+                                <div class="years-container">
+                                    ${topic.years.map(year => `<span class="year-tag" data-year="${year}">${year}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    topicsContainer.appendChild(topicCard);
+                });
+
+                subjectCard.appendChild(subjectCardHeader);
+                subjectCard.appendChild(topicsContainer);
+                subjectsContainer.appendChild(subjectCard);
+
+                // Initialize charts after DOM is updated
+                setTimeout(() => {
+                    initializeCharts();
+                }, 0);
+            });
+
+            // Setup collapsible sections
+            setupCollapsibleSections();
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            const chartCanvases = document.querySelectorAll('.topic-chart');
+            
+            chartCanvases.forEach(canvas => {
+                const years = JSON.parse(canvas.getAttribute('data-years'));
+                
+                // Extract year numbers for the chart
+                const yearCounts = {};
+                years.forEach(year => {
+                    // Extract the numeric part of the year
+                    const yearMatch = year.match(/\d{4}/);
+                    if (yearMatch) {
+                        const yearNum = yearMatch[0];
+                        yearCounts[yearNum] = (yearCounts[yearNum] || 0) + 1;
+                    }
+                });
+                
+                const labels = Object.keys(yearCounts).sort();
+                const data = labels.map(label => yearCounts[label]);
+                
+                // Create the chart
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Questions',
+                            data: data,
+                            backgroundColor: '#4a9eff',
+                            borderColor: '#4a9eff',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Questions: ${context.parsed.y}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#b3b3b3'
+                                },
+                                grid: {
+                                    color: '#404040'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#b3b3b3'
+                                },
+                                grid: {
+                                    color: '#404040'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('search-input').addEventListener('input', function(e) {
+                appState.searchQuery = e.target.value;
+                renderMainContent();
+            });
+
+            // Mobile search
+            document.getElementById('mobile-search-input').addEventListener('input', function(e) {
+                appState.searchQuery = e.target.value;
+                renderMainContent();
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    appState.currentFilter = this.getAttribute('data-filter');
+                    renderMainContent();
+                    
+                    // Close mobile menu after selection
+                    if (appState.isMobile) {
+                        document.getElementById('mobile-menu').classList.remove('active');
+                        document.getElementById('overlay').classList.remove('active');
+                    }
+                });
+            });
+
+            // Sort select
+            document.getElementById('sort-select').addEventListener('change', function(e) {
+                appState.currentSort = e.target.value;
+                renderMainContent();
+            });
+
+            // Mobile sort select
+            document.getElementById('mobile-sort-select').addEventListener('change', function(e) {
+                appState.currentSort = e.target.value;
+                renderMainContent();
+                
+                // Close mobile menu after selection
+                if (appState.isMobile) {
+                    document.getElementById('mobile-menu').classList.remove('active');
+                    document.getElementById('overlay').classList.remove('active');
+                }
+            });
+
+            // Year tags
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('year-tag')) {
+                    const year = e.target.getAttribute('data-year');
+                    showTooltip(e, `Paper: ${year}`);
+                }
+            });
+
+            // Checkboxes
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('topic-checkbox')) {
+                    toggleTopicCompletion(e.target);
+                }
+            });
+
+            // Mobile navigation
+            document.getElementById('nav-subjects').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('sidebar').classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+            });
+
+            document.getElementById('nav-menu').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('mobile-menu').classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+            });
+
+            // Mobile menu close
+            document.getElementById('mobile-menu-close').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            });
+
+            // Overlay close
+            document.getElementById('overlay').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('mobile-menu').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            });
+
+            // Mobile search
+            document.getElementById('search-bar').addEventListener('click', function() {
+                if (appState.isMobile) {
+                    document.getElementById('mobile-search-overlay').classList.add('active');
+                }
+            });
+
+            document.getElementById('mobile-search-close').addEventListener('click', function() {
+                document.getElementById('mobile-search-overlay').classList.remove('active');
+            });
+
+            // Window resize handler
+            window.addEventListener('resize', function() {
+                appState.isMobile = window.innerWidth <= 768;
+            });
+        }
+
+        // Setup Collapsible Sections
+        function setupCollapsibleSections() {
+            const subjectHeaders = document.querySelectorAll('.subject-card-header');
+            
+            subjectHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    this.classList.toggle('collapsed');
+                });
+            });
+        }
+
+        // Update Overall Progress
+        function updateOverallProgress() {
+            let totalTopics = 0;
+            let completedTopics = 0;
+            
+            gateData.gate_progress.subjects.forEach(subject => {
+                totalTopics += subject.topics.length;
+                subject.topics.forEach(topic => {
+                    if (appState.completedTopics[`${subject.name}-${topic.name}`]) {
+                        completedTopics++;
+                    }
+                });
+            });
+            
+            const progressPercentage = totalTopics > 0 ? 
+                Math.round((completedTopics / totalTopics) * 100) : 0;
+            
+            document.getElementById('overall-progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('overall-progress-text').textContent = `${progressPercentage}% Complete`;
+        }
+
+        // Show Tooltip
+        function showTooltip(event, text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = text;
+            tooltip.style.opacity = '1';
+            
+            if (appState.isMobile) {
+                // On mobile, show tooltip as a modal
+                tooltip.style.position = 'fixed';
+                tooltip.style.top = '50%';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+                tooltip.style.width = '80%';
+                tooltip.style.textAlign = 'center';
+                tooltip.style.padding = '20px';
+                tooltip.style.fontSize = '1rem';
+                
+                // Add close button for mobile
+                tooltip.innerHTML = `${text} <button style="margin-top: 10px; background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">OK</button>`;
+                
+                // Close on button click
+                tooltip.querySelector('button').addEventListener('click', function() {
+                    tooltip.style.opacity = '0';
+                });
+            } else {
+                // On desktop, show tooltip near cursor
+                tooltip.style.left = `${event.pageX + 10}px`;
+                tooltip.style.top = `${event.pageY + 10}px`;
+                
+                setTimeout(() => {
+                    tooltip.style.opacity = '0';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
