@@ -1,239 +1,228 @@
-🌟 Features
-📊 Progress Tracking
-Overall Progress Dashboard - Track completion percentage across all subjects
+# 🚀 GATE CSE Complete Study & Progress Tracker
 
-Individual Subject Progress - Monitor progress for each subject separately
+A modern web application to track preparation progress, analyze topic importance, and stay motivated throughout your GATE journey!
 
-Topic Completion - Mark topics as completed with persistent storage
+---
 
-Real-time Updates - Progress bars update automatically as you complete topics
+## 🌟 Core Features
 
-🔍 Smart Filtering & Search
-Search Topics - Find specific topics across all subjects
+### 📊 Progress Tracking
 
-Advanced Filters:
+* ✅ **Overall Progress Dashboard** — Track completion status across all subjects
+* 📚 **Per-Subject Tracking** — View individual subject performance
+* ✅ **Topic Completion** — Mark topics as completed with persistent storage
+* 🔄 **Real-time Auto Updates** — Progress bars refresh instantly
 
-🔥 High Repetition Topics (5+ years)
+---
 
-📅 Recent Years (2020+)
+### 🔍 Smart Filtering & Search
 
-⏳ Not Completed Topics
+* 🔎 Global topic search
+* 🎯 Advanced filters:
 
-Multiple Sorting Options:
+  * 🔥 High repetition topics (5+ years)
+  * 📅 Focus on 2020+ topics
+  * ⏳ Not completed topics
+* ↕️ Sorting options:
 
-Most Repeated Questions
+  * Most repeated
+  * Alphabetical
+  * Oldest/Newest first
 
-Alphabetical Order
+---
 
-Oldest/Newest First
+### 📈 Visual Analytics
 
-📈 Visual Analytics
-Bar Charts - Visualize question frequency per topic across years
+* 📊 Bar charts showing topic-wise frequency
+* 🗓 Year-wise heatmaps
+* ℹ️ Interactive tooltips revealing paper details
 
-Year Heatmaps - See all exam years for each topic
+---
 
-Interactive Tooltips - Get paper details on click/hover
+### 📱 Mobile-First Design
 
-📱 Mobile-First Design
-Fully Responsive - Works seamlessly on desktop, tablet, and mobile
+* 📌 Fully responsive (desktop + tablet + mobile)
+* 👆 Touch-friendly controls
+* 👋 Swipe navigation
+* 🔃 Pull-to-refresh
+* 🧭 Bottom navigation bar for mobile
 
-Touch-Friendly - Optimized for mobile interactions
+---
 
-Swipe Gestures - Navigate with intuitive swipe actions
+### 💾 Data Persistence
 
-Pull-to-Refresh - Refresh data with familiar mobile gesture
+* 🔐 LocalStorage backup — no login required
+* 🌍 Fully offline capable
+* 💻 Reopen anytime — data saved automatically
 
-Bottom Navigation - Easy mobile navigation
+---
 
-💾 Data Persistence
-Local Storage - Your progress is automatically saved locally
+## 🚀 Quick Start
 
-No Account Needed - Works completely offline
+### ✅ Option 1 — Direct Use
 
-Cross-device Compatibility - Data persists between sessions
+Just open **index.html** in any modern browser
 
-🚀 Quick Start
-Option 1: Direct Usage
-Simply open the index.html file in any modern web browser!
+### 🌍 Option 2 — Deploy on Web
 
-Option 2: Web Deployment
-Download all files to your web server
+1. Download source files
+2. Upload to GitHub Pages / Netlify / Vercel
+3. Share your URL ✅
 
-Upload to any static hosting service (GitHub Pages, Netlify, Vercel)
+---
 
-Access via your domain URL
+## 🛠 Technology Stack
 
-🛠 Technology Stack
-Frontend: HTML5, CSS3, JavaScript (ES6+)
+| Layer    | Technology                     |
+| -------- | ------------------------------ |
+| Frontend | HTML5, CSS3, JavaScript (ES6+) |
+| Charts   | Chart.js                       |
+| Icons    | Font Awesome                   |
+| Storage  | Browser LocalStorage           |
+| Layout   | CSS Grid + Flexbox             |
 
-Charts: Chart.js for beautiful data visualizations
+---
 
-Icons: Font Awesome for intuitive UI icons
+## 📖 How to Use
 
-Storage: Browser LocalStorage for data persistence
+### 🧭 Navigation
 
-Design: CSS Grid + Flexbox for responsive layouts
+| Action          | Description             |
+| --------------- | ----------------------- |
+| Browse subjects | Click subject name      |
+| Expand topics   | Toggle header           |
+| Mark complete ✅ | Checkbox on each topic  |
+| View analytics  | Chart visible per topic |
 
-📖 How to Use
-Basic Navigation
-Browse Subjects: Click on any subject in the sidebar to filter topics
+### 🛠 Advanced
 
-Expand Topics: Click subject headers to expand/collapse topic lists
+* Search any topic
+* Apply filters and sort modes
+* Mobile hamburger menu for quick access
 
-Mark Completion: Click checkboxes to mark topics as completed
+---
 
-View Analytics: Each topic shows bar charts and year appearances
+## 📱 Mobile Gestures
 
-Advanced Features
-Search: Use the search bar to find specific topics
+| Gesture     | Action         |
+| ----------- | -------------- |
+| Swipe Left  | Open sidebar   |
+| Swipe Right | Close panels   |
+| Long Press  | Quick complete |
+| Pull Down   | Refresh app    |
 
-Filtering: Apply filters to see high-priority topics
+---
 
-Sorting: Change sort order for better organization
+## 📊 Subjects Covered
 
-Mobile Menu: Access filters and sorting on mobile via hamburger menu
+✔ Full coverage of all major **GATE CSE** subjects:
 
-Mobile Gestures
-Swipe Left: Open subject sidebar
+* Discrete Mathematics — 20 topics
+* Engineering Mathematics — 5
+* General Aptitude — 45
+* Algorithms — 10
+* COA — 4
+* Compiler Design — 8
+* Computer Networks — 10
+* Databases — 11
+* Digital Logic — 11
+* Operating Systems — 7
+* Programming & DS — 12
+* C / Programming Paradigms — 3
+* Theory of Computation — 15
 
-Swipe Right: Close panels
+---
 
-Long Press: Quick mark topic as complete
+## 🎯 Study Strategy Tips
 
-Pull Down: Refresh application
+### High-Repetition First ✅
 
-📊 Subjects Covered
-The application includes complete coverage of all GATE CSE subjects:
+Topics with **5+ years repeated** → High scoring potential
 
-Discrete Mathematics (20 topics)
+### Recent Trend Focus 📅
 
-Engineering Mathematics (5 topics)
+2020+ topics reflect new patterns
 
-General Aptitude (45 topics)
+### Completion Roadmap 🛤
 
-Algorithms (10 topics)
+1. High-repetition + incomplete
+2. High-weightage subjects
+3. Remaining topics via "Not Completed" filter
 
-Computer Organization and Architecture (4 topics)
+---
 
-Compiler Design (8 topics)
+## 🔧 Customization
 
-Computer Networks (10 topics)
+### Add New Subjects/Topics
 
-Databases (11 topics)
+Modify the `gateData` object in JS
 
-Digital Logic (11 topics)
+### Restyle UI
 
-Operating System (7 topics)
+Edit CSS `:root` variables:
 
-Programming and Data Structures (12 topics)
+* Colors
+* Fonts
+* Layout spacing
 
-Programming (C and Paradigms) (3 topics)
+---
 
-Theory of Computation (15 topics)
+## 🌐 Browser Compatibility
 
-🎯 Study Strategy Tips
-High-Repetition Focus
-Prioritize topics with 5+ years of questions
-
-These have higher probability of appearing again
-
-Recent Trends
-Pay special attention to 2020+ topics
-
-GATE pattern evolves - recent years indicate current focus
-
-Completion Strategy
-Start with high-repetition, incomplete topics
-
-Move to subjects with highest weightage
-
-Use the "Not Completed" filter to track remaining topics
-
-🔧 Customization
-Adding New Topics
-Edit the gateData object in the JavaScript to add:
-
-New subjects
-
-Additional topics
-
-Updated year data
-
-Styling Changes
-Modify CSS variables in the :root section for:
-
-Color schemes
-
-Typography
-
-Layout dimensions
-
-Border radii
-
-🌐 Browser Compatibility
 ✅ Chrome 60+
-
 ✅ Firefox 55+
-
 ✅ Safari 12+
-
 ✅ Edge 79+
+✅ Mobile browsers
 
-✅ Mobile browsers (iOS Safari, Chrome Mobile)
+---
 
-📱 Mobile Optimization
-Touch Targets: All interactive elements are 44px minimum
+## 📱 Mobile Optimization
 
-Performance: Optimized animations and efficient rendering
+* 44px button targets
+* Smooth transitions
+* Optimized rendering
+* Reduced motion support
+* 100% offline functionality
 
-Accessibility: Support for reduced motion preferences
+---
 
-Offline Capable: Works without internet connection
+## 🤝 Contribution Guidelines
 
-🤝 Contributing
-We welcome contributions! Here's how you can help:
+You can help improve the project by:
 
-Report Bugs: Open an issue with detailed description
+* Reporting bugs 🐛
+* Suggesting features 💡
+* Submitting PRs 🔥
+  → Add topics / improve charts / responsiveness
 
-Suggest Features: Propose new features or improvements
-
-Submit Pull Requests:
-
-Add new GATE topics/years
-
-Improve mobile responsiveness
-
-Enhance chart visualizations
-
-Fix any issues
-
-Development Setup
-bash
-# Clone the repository
+```bash
+# Development setup
 git clone https://github.com/your-username/gate-cse-tracker.git
-
-# Open in browser
 open index.html
+```
 
-🙏 Acknowledgments
-GATE Exam - For the comprehensive syllabus and previous year papers
+---
 
-Chart.js - For beautiful, responsive charts
+## 🙏 Acknowledgments
 
-Font Awesome - For the comprehensive icon library
+* GATE exam ecosystem for syllabus and papers
+* Chart.js
+* Font Awesome
+* Notion — UI inspiration
 
-Notion - UI design inspiration
+---
 
-📞 Support
-If you encounter any issues or have questions:
+## 🎓 About GATE
 
-Check the Issues page for existing solutions
+The **Graduate Aptitude Test in Engineering** evaluates comprehensive knowledge in engineering & sciences for admissions and PSUs.
 
-Create a new issue with detailed description
+---
 
-Include browser and device information for mobile issues
+### 🎉 Happy Learning & Good Luck for GATE! 🚀
 
-🎓 About GATE
-The Graduate Aptitude Test in Engineering (GATE) is an examination that primarily tests the comprehensive understanding of various undergraduate subjects in engineering and science for admission into postgraduate programs.
+Keep tracking. Keep improving. Keep succeeding.
 
-Happy Preparing! 🚀
+---
+
+
